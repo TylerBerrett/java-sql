@@ -83,13 +83,13 @@ Answer the following data queries. Keep track of the SQL you write by pasting it
 > This can be done with the INSERT INTO clause
 ## INSERT INTO customers(customer_id, company_name, contact_name, address, city, postal_code, country)
 
-!## VALUES('SHIRE', 'The Shire', 'Bilbo Baggins', '1 Hobbit-Hole', 'Bag End', '111', 'Middle Earth')
+##VALUES('SHIRE', 'The Shire', 'Bilbo Baggins', '1 Hobbit-Hole', 'Bag End', '111', 'Middle Earth')
 
 
 ### update _Bilbo Baggins_ record so that the postal code changes to _"11122"_.
 > This can be done with UPDATE and WHERE clauses
 
-!## UPDATE customers SET postal_code = '11122' WHERE contact_name = 'Bilbo Baggins'
+## UPDATE customers SET postal_code = '11122' WHERE contact_name = 'Bilbo Baggins'
 
 
 ### list orders grouped by customer showing the number of orders per customer. _Rattlesnake Canyon Grocery_ should have 18 orders.
@@ -97,19 +97,19 @@ Answer the following data queries. Keep track of the SQL you write by pasting it
 
 > There is more information about the COUNT clause on [W3 Schools](https://www.w3schools.com/sql/sql_count_avg_sum.asp)
 
-!## SELECT c.company_name, COUNT(\*) as thecount FROM customers c JOIN orders o on c.customer_id = o.customer_id GROUP BY c.customer_id
+## SELECT c.company_name, COUNT(\*) as thecount FROM customers c JOIN orders o on c.customer_id = o.customer_id GROUP BY c.customer_id
 
 
 ### list customers names and the number of orders per customer. Sort the list by number of orders in descending order. _Save-a-lot Markets should be at the top with 31 orders followed by _Ernst Handle_ with 30 orders. Last should be _Centro comercial Moctezuma_ with 1 order.
 > This can be done by adding an ORDER BY clause to the previous answer
 
-!## SELECT c.company_name, COUNT(\*) as thecount FROM customers c JOIN orders o on c.customer_id = o.customer_id GROUP BY c.customer_id ORDER BY thecount DESC
+## SELECT c.company_name, COUNT(\*) as thecount FROM customers c JOIN orders o on c.customer_id = o.customer_id GROUP BY c.customer_id ORDER BY thecount DESC
 
 
 ### list orders grouped by customer's city showing number of orders per city. Returns 69 Records with _Aachen_ showing 6 orders and _Albuquerque_ showing 18 orders.
 > This is very similar to the previous two queries, however, it focuses on the City rather than the CustomerName
 
-!## SELECT c.city, COUNT(\*) as thecount  FROM customers c JOIN orders o on c.customer_id = o.customer_id GROUP BY c.city ORDER BY city
+## SELECT c.city, COUNT(\*) as thecount  FROM customers c JOIN orders o on c.customer_id = o.customer_id GROUP BY c.city ORDER BY city
 
 
 ## Data Normalization
@@ -124,10 +124,37 @@ Take the following data and normalize it into a 3NF database.  You can use the w
 | Bob         | Joe      | Horse    |            |            |            |            | No          | No           |
 | Sam         | Ginger   | Dog      | Miss Kitty | Cat        | Bubble     | Fish       | Yes         | No           |
 
+| Person Id | Person Name |
+|-----------|-------------|
+| 1         | Jane        |
+| 2         | Bob         |
+| 3         | Sam         |
+
+| Pet Id | Person Id | Pet Name   | Type Id |
+|--------|-----------|------------|---------|
+| 1      | 1         | Ellie      | 1       |
+| 2      | 1         | Tiger      | 2       |
+| 3      | 1         | Toby       | 3       |
+| 4      | 2         | Joe        | 4       |
+| 5      | 3         | Ginger     | 1       |
+| 6      | 3         | Miss Kitty | 2       |
+| 7      | 3         | Bubble     | 5       |
+
+| Type Id | Pet Type |
+|---------|----------|
+| 1       | Dog      |
+| 2       | Cat      |
+| 3       | Turtle   |
+| 4       | Horse    |
+| 5       | Fish     |
+
+
 ---
 ## Stretch Goals
 
 ### delete all customers that have no orders. Should delete 2 (or 3 if you haven't deleted the record added) records.
+
+## DELETE FROM customers WHERE company_name NOT IN (SELECT c.company_name FROM customers c JOIN orders o on c.customer_id = o.customer_id GROUP BY c.customer_id)
 
 ## Create Database and Table
 
@@ -144,3 +171,22 @@ Take the following data and normalize it into a 3NF database.  You can use the w
   - the `id` should be the primary key for the table.
   - account `name` should be unique.
   - account `budget` is required.
+
+  CREATE DATABASE budget
+      WITH
+      OWNER = postgres
+      ENCODING = 'UTF8'
+      LC_COLLATE = 'C'
+      LC_CTYPE = 'C'
+      TABLESPACE = pg_default
+      CONNECTION LIMIT = -1;
+
+CREATE TABLE public.accounts
+(
+    id numeric NOT NULL,
+    name text COLLATE pg_catalog."default",
+    budget numeric NOT NULL,
+    CONSTRAINT accounts_pkey PRIMARY KEY (id),
+    CONSTRAINT accounts_name_key UNIQUE (name)
+
+)

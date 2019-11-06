@@ -148,6 +148,11 @@ Take the following data and normalize it into a 3NF database.  You can use the w
 | 4       | Horse    |
 | 5       | Fish     |
 
+| Person Id | Fenced Yard | City Dweller |
+|-----------|-------------|--------------|
+| 1         | No          | Yes          |
+| 2         | No          | No           |
+| 3         | Yes         | No           |
 
 ---
 ## Stretch Goals
